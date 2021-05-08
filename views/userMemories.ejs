@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Memories - Where Memories Keep Living</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light justify-content-between">
+    <a class="navbar-brand" href="/memories">Memories</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-user-circle"></i></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="inner-container">
+      <div class="text-content">
+        <h1>Where memories keep living</h1>
+        <p>A private, safe and beautiful space to capture your stories and loving moments. For now and for future generation.</p>
+      </div>
+      <div class="memory-content">
+        <img src="/images/memories.jpg" alt="memory-image">
+      </div>
+    </div>
+  </div>
+  <div class="user">
+    <h1 class="username"><%= username %></h1>
+    <div class="about">
+      This timeline is created to collect all my memories in a single place online.
+    </div>
+  </div>
+  <div class="inner-container2">
+    <% if(count===0) { %>
+    <div class="descrition">Share photos, tags and stories here.</div>
+    <a class="primary-btn" style="font-weight: bold !important; margin: 30px 0;"><span class="plus">+</span> Add the first memory</a>
+    <img class="profile-img" src="/images/profile.png" alt="profile-img">
+    <% } else { %>
+    <div class="row">
+      <% posts.forEach(function(newPosts) { %>
+      <div class="col-sm-4">
+        <form action="/content" method="post">
+          <div class="card">
+            <p class="card-id" style="display: none;"><%= newPosts._id %></p>
+            <p class="card-message" style="display: none;"><%=newPosts.message %></p>
+            <p class="card-location" style="display: none"><%=newPosts.location %></p>
+            <p class="card-year" style="display: none"><%=newPosts.year %></p>
+            <p class="card-month" style="display: none"><%=newPosts.month %></p>
+            <p class="card-date" style="display: none"><%=newPosts.date %></p>
+            <p class="card-slider" style="display: none;"><%= newPosts.checkbox %></p>
+            <input type="hidden" name="userId" value="<%= newPosts.userId %>">
+            <input type="hidden" name="title" value="<%= newPosts.title %>">
+            <input type="hidden" class="photos" name="photos[]" value="<%= newPosts.img %>">
+            <button class="btn btn-default" type="submit" name="card" value="<%= newPosts._id %>" onchange="this.form.submit()" style="all: unSet;">
+              <div class="overlay">
+                <i class="far fa-image"></i>
+                <span class="image-text"><%= newPosts.fileLength %></span>
+              </div>
+              <img src="/<%= newPosts.img[0] %>" class="card-img-top" alt="memory-img">
+              <div class="card-body">
+                <div class="card-tag" style="font-size: 14px; color: blue; margin-bottom: 3px;">#<%= newPosts.tags %></div>
+                <h5 class="card-title" name="title" value="<%= newPosts.title %>" style="font-weight: 600;"><%= newPosts.title %></h5>
+                <% if(newPosts.message.length>120) { %>
+                <p class="card-text"><%= newPosts.message.substring(0,120) %>...</p>
+                <% } else { %>
+                <p class="card-text"><%= newPosts.message %></p>
+                <% } %>
+              </div>
+              <hr style="margin: 0; border-top: 1px solid rgba(0,0,0,0.125);">
+              <ul class="list-group list-group-flush card-list">
+                <li class="list-group-item" style="font-weight: 600; color: #9e9ea7;">Post by <%= username %></li>
+                <li class="list-group-item"><%=newPosts.DateString %><i class="fas fa-circle"></i><%=newPosts.location%></li>
+              </ul>
+            </button>
+            <ul class="list-group list-group-flush card-list">
+              <li class="list-group-item" style="justify-content: space-between;">
+                <div>
+                  <ul>
+                    <li><i class="fas fa-eye"> <span style="color: #9e9ea7;"><%= newPosts.views %></i></li>
+                    <li><i class="fas fa-heart"> <span style="color: #9e9ea7;"><%= newPosts.likes.length %></span></i></li>
+                    <% var url=newPosts.title.replace(/ /g,"-"); %>
+                    <li><a href="/memories/<%= newPosts._id %>-<%= url %>"><i class="fas fa-comment"> <span style="color: #9e9ea7;"><%= newPosts.userComment.length %></span></i></a></li>
+                  </ul>
+                </div>
+                <div class="dropdown">
+                  <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="all: unSet;">
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="border-radius: 12px;">
+                    <form action="/share" method="post">
+                      <button class="dropdown-item" type="button"><i class="fas fa-share" style="font-size: 16px; color: #00b359;"></i><span style="color: #00b359;">Share Memory</span></button>
+                    </form>
+                    <div class="dropdown-divider"></div>
+                    <button type="button" class="dropdown-item editMemory" name="edit" value="<%= newPosts._id %>"><i class="fas fa-cog"></i><span style="color: blue;">Edit Memory</span></button>
+                    <div class="dropdown-divider"></div>
+                    <form action="/memories/delete" method="post">
+                      <button class="dropdown-item" type="submit" name="deleteCard" value="<%= newPosts._id %>" onChange="this.form.submit()"><i class="far fa-trash-alt"></i><span style="color: red;">Delete Memory</span></button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </form>
+      </div>
+      <% }) %>
+    </div>
+    <div class="rounded-full-top"></div>
+    <div class="vl"></div>
+    <div class="rounded-full-bottom"></div>
+    <% } %>
+  </div>
+  <div style="height: 120px;"></div>
+  <a class="primary-btn memory-btn" id="addMemory"><span class="plus">+</span> Memory</a>
+  <a id="topUp"><img src="/images/top-up.png" class="top-up-image" alt="top-up-image"></a>
+  <div class="h-080"></div>
+  <div style="padding: 0 72px;">
+    <hr>
+  </div>
+  <footer>
+    <p>© 2021 Memories. All rights reserved.</p>
+    <p>Made with ♥ remotely</p>
+    <p><strong style="color: black !important;">14,956,346</strong> shots memories</p>
+  </footer>
+  <div class="bg-model">
+    <div class="model-content">
+      <div class="navbar navbar-custom justify-content-between">
+        <a class="navbar-brand" href="/memories">Memories</a>
+        <h3>Add a Memory</h3>
+        <div class="close">+</div>
+      </div>
+      <div id="memory-container">
+        <form id="memoryForm" action="/memories/create" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div id="col1" class="col1">
+              <div class="drop-zone">
+                <div class="drop-zone__prompt">
+                  <i class="fas fa-cloud-upload-alt fa-7x"></i>
+                  <h2 style="font-size: 34px; font-weight: bold;">Drag and drop upto 6 image</h2>
+                  <p style="font-size: 22px; margin-bottom: 8px;">or
+                    <label for="drop-zone__input" class="custom-file">browse</label>
+                    <input type="file" id="drop-zone__input" class="drop-zone__input" name="photo[]" multiple/>
+                    to choose a file
+                  </p>
+                  <p style="font-size: 14px; color: gray;">(Image should be upto 5MB each)</p>
+                </div>
+              </div>
+              <div class="multishot">
+                <label>Multi-shot</label>
+                <div class="portrait">
+                  <ul id="frames">
+                    <% for(var i=0;i<6;i++) {%>
+                      <li>
+                        <div class="drop-area-thumbnail preview"></div>
+                      </li>
+                    <% } %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col2">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control title1" name="title" placeholder="Title" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label>Tags</label>
+                <input type="text" class="form-control tag1" name="tags" placeholder="Tags (comma separated)">
+              </div>
+              <div class="form-group">
+                <label>Add a Description</label>
+                <textarea class="form-control message1" name="message" rows="3" placeholder="Write something about this memory"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-control location1" name="location" placeholder="Location">
+              </div>
+              <div class="form-group">
+                <label>Add memory date</label>
+                <div class="row">
+                  <div class="col">
+                    <input type="number" class="form-control year1" name="year" placeholder="yyyy">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control month1" name="month" placeholder="mm">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control date1" name="date" placeholder="dd">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group justify-content-between">
+                <label style="margin-bottom: 0;">Private memory
+                  <label class="switch">
+                    <input class="checkBox1" type="checkbox" name="checkbox" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </label>
+              </div>
+              <div style="margin-top: 1rem; display: flex; justify-content: space-between;">
+                <button class="secondary-btn clear" type="button" style="width: 180px;">Clear</button>
+                <button id="addMemoryButton" class="primary-btn" type="submit" name="button" style="width: 180px;">Add a memory</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="bg-model">
+    <div class="model-content">
+      <div class="navbar navbar-custom justify-content-between">
+        <a class="navbar-brand" href="/memories">Memories</a>
+        <h3>Edit a Memory</h3>
+        <div class="close">+</div>
+      </div>
+      <div id="memory-container">
+        <form action="/memories/update" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col1">
+              <div class="drop-zone">
+                <div class="drop-zone__prompt">
+                  <i class="fas fa-cloud-upload-alt fa-7x"></i>
+                  <h2 style="font-size: 34px; font-weight: bold;">Drag and drop upto 6 image</h2>
+                  <p style="font-size: 22px; margin-bottom: 8px;">or
+                    <label for="drop-zone__input" class="custom-file">browse</label>
+                    <input type="file" id="drop-zone__input" class="drop-zone__input" name="photo[]" multiple />
+                    to choose a file
+                  </p>
+                  <p style="font-size: 14px; color: gray;">(Image should be upto 5MB each)</p>
+                </div>
+              </div>
+              <div class="multishot">
+                <label>Multi-shot</label>
+                <div class="portrait">
+                  <ul id="frames">
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col2">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control title" name="title" placeholder="Title" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label>Tags</label>
+                <input type="text" class="form-control tag" name="tags" placeholder="Tags">
+              </div>
+              <div class="form-group">
+                <label>Edit a Description</label>
+                <textarea class="form-control message" name="message" rows="3" placeholder="Write something about this memory"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-control location" name="location" placeholder="Location">
+              </div>
+              <div class="form-group">
+                <label>Edit memory date</label>
+                <div class="row">
+                  <div class="col">
+                    <input type="number" class="form-control year" name="year" placeholder="yyyy">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control month" name="month" placeholder="mm">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control date" name="date" placeholder="dd">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group justify-content-between">
+                <label style="margin-bottom: 0;">Private memory
+                  <label class="switch">
+                    <input class="checkBox" type="checkbox" name="checkbox" />
+                    <span class="slider round"></span>
+                  </label>
+                </label>
+              </div>
+              <div style="margin-top: 1rem; display: flex; justify-content: space-between;">
+                <button class="secondary-btn cancel" type="button" style="width: 180px;">Clear</button>
+                <button class="primary-btn id" type="submit" name="id" style="width: 180px;">Update a memory</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="/JS/user.js" charset="utf-8"></script>
+</body>
+
+</html>

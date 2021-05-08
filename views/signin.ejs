@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Sign in | Memories</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+</head>
+
+<body>
+  <div id="main-container">
+    <section class="auth-sidebar" style="background-color: #F1CDD7 !important;">
+      <div class="auth-sidebar-content">
+        <header>
+          <a href="/memories" style="color: #a27687;">Memories</a>
+          <h3 style="margin-top: 28px; font-weight: bold; color: #865c6c;">Where memories keep living</h3>
+        </header>
+      </div>
+    </section>
+    <section class="content">
+      <nav class="auth-nav">
+        <p class="auth-link">Not a member?</p>
+        <a href="/signup">Sign up now</a>
+      </nav>
+      <main>
+        <div class="auth-content">
+          <h3 style="font-weight: bold; margin-bottom: 26px;">Sign in to Memories</h3>
+          <div class="auth-connections">
+            <form class="auth-google-form" action="/auth/google_signup" accept-charset="UTF-8" method="post">
+              <input name="utf8" type="hidden">
+              <input type="hidden" name="authenticity_token" value="">
+              <button class="btn btn-primary btn-lg btn-block" type="submit" name="button" style="margin-bottom: 40px"><i class="fab fa-google"></i> Sign in with Google</button>
+            </form>
+          </div>
+          <hr class="divider">
+          <form action="/signin" method="post" style="margin: 26px 0 30px 0">
+            <div class="form-group">
+              <label for="user_name">Username or Email Address</label>
+              <input type="text" id="user_name" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+              <label class="password">Password <a href="#" class="forgot_password">Forgot Password?</a></label>
+              <input type="password" id="myInput" class="form-control" name="password">
+            </div>
+            <div class="form-group form-check">
+              <input type="checkbox" class="form-check-input" onclick="myFunction()">Show Password
+            </div>
+            <button type="submit" class="primary-btn" onchange="this.form.submit()" style="width: 200px">Sign in</button>
+          </form>
+        </div>
+      </main>
+    </section>
+  </div>
+  <script type="text/javascript">
+    function myFunction() {
+      var x = document.getElementById("myInput");
+      if (x.type === "password") {
+        x.type = "text";
+      } else {
+        x.type = "password";
+      }
+    }
+    window.addEventListener( "pageshow", function ( event ) {
+      event.preventDefault();
+      var historyTraversal = event.persisted ||
+                             ( typeof window.performance != "undefined" &&
+                                  window.performance.navigation.type === 2 );
+      if ( historyTraversal ) {
+        // Handle page restore.
+        window.location.reload();
+      }
+    });
+  </script>
+</body>
+
+</html>
