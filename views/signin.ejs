@@ -27,21 +27,14 @@
       <main>
         <div class="auth-content">
           <h3 style="font-weight: bold; margin-bottom: 26px;">Sign in to Memories</h3>
-          <div class="auth-connections">
-            <form class="auth-google-form" action="/auth/google_signup" accept-charset="UTF-8" method="post">
-              <input name="utf8" type="hidden">
-              <input type="hidden" name="authenticity_token" value="">
-              <button class="btn btn-primary btn-lg btn-block" type="submit" name="button" style="margin-bottom: 40px"><i class="fab fa-google"></i> Sign in with Google</button>
-            </form>
-          </div>
           <hr class="divider">
           <form action="/signin" method="post" style="margin: 26px 0 30px 0">
             <div class="form-group">
-              <label for="user_name">Username or Email Address</label>
+              <label for="user_name">Username</label>
               <input type="text" id="user_name" class="form-control" name="username">
             </div>
             <div class="form-group">
-              <label class="password">Password <a href="#" class="forgot_password">Forgot Password?</a></label>
+              <label class="password">Password</label>
               <input type="password" id="myInput" class="form-control" name="password">
             </div>
             <div class="form-group form-check">

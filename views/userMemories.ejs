@@ -15,7 +15,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fas fa-user-circle"></i></a>
+          <a class="primary-btn nav-link" href="/logout">Sign out</a>
         </li>
       </ul>
     </div>
@@ -46,8 +46,8 @@
     <div class="row">
       <% posts.forEach(function(newPosts) { %>
       <div class="col-sm-4">
-        <form action="/content" method="post">
-          <div class="card">
+        <div class="card">
+          <form action="/content" method="post">
             <p class="card-id" style="display: none;"><%= newPosts._id %></p>
             <p class="card-message" style="display: none;"><%=newPosts.message %></p>
             <p class="card-location" style="display: none"><%=newPosts.location %></p>
@@ -79,36 +79,32 @@
                 <li class="list-group-item"><%=newPosts.DateString %><i class="fas fa-circle"></i><%=newPosts.location%></li>
               </ul>
             </button>
-            <ul class="list-group list-group-flush card-list">
-              <li class="list-group-item" style="justify-content: space-between;">
-                <div>
-                  <ul>
-                    <li><i class="fas fa-eye"> <span style="color: #9e9ea7;"><%= newPosts.views %></i></li>
-                    <li><i class="fas fa-heart"> <span style="color: #9e9ea7;"><%= newPosts.likes.length %></span></i></li>
-                    <% var url=newPosts.title.replace(/ /g,"-"); %>
-                    <li><a href="/memories/<%= newPosts._id %>-<%= url %>"><i class="fas fa-comment"> <span style="color: #9e9ea7;"><%= newPosts.userComment.length %></span></i></a></li>
-                  </ul>
+          </form>
+          <ul class="list-group list-group-flush card-list">
+            <li class="list-group-item" style="justify-content: space-between;">
+              <div>
+                <ul>
+                  <li><i class="fas fa-eye"> <span style="color: #9e9ea7;"><%= newPosts.views %></i></li>
+                  <li><i class="fas fa-heart"> <span style="color: #9e9ea7;"><%= newPosts.likes.length %></span></i></li>
+                  <% var url=newPosts.title.replace(/ /g,"-"); %>
+                  <li><a href="/memories/<%= newPosts._id %>-<%= url %>"><i class="fas fa-comment"> <span style="color: #9e9ea7;"><%= newPosts.userComment.length %></span></i></a></li>
+                </ul>
+              </div>
+              <div class="dropdown">
+                <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="all: unSet;">
+                  <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="border-radius: 12px;">
+                  <button type="button" class="dropdown-item editMemory" name="edit" value="<%= newPosts._id %>"><i class="fas fa-cog"></i><span style="color: blue;">Edit Memory</span></button>
+                  <div class="dropdown-divider"></div>
+                  <form action="/memories/delete" method="post">
+                    <button class="dropdown-item" type="submit" name="deleteCard" value="<%= newPosts._id %>" onchange="this.form.submit()"><i class="far fa-trash-alt"></i><span style="color: red;">Delete Memory</span></button>
+                  </form>
                 </div>
-                <div class="dropdown">
-                  <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="all: unSet;">
-                    <i class="fas fa-ellipsis-h"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="border-radius: 12px;">
-                    <form action="/share" method="post">
-                      <button class="dropdown-item" type="button"><i class="fas fa-share" style="font-size: 16px; color: #00b359;"></i><span style="color: #00b359;">Share Memory</span></button>
-                    </form>
-                    <div class="dropdown-divider"></div>
-                    <button type="button" class="dropdown-item editMemory" name="edit" value="<%= newPosts._id %>"><i class="fas fa-cog"></i><span style="color: blue;">Edit Memory</span></button>
-                    <div class="dropdown-divider"></div>
-                    <form action="/memories/delete" method="post">
-                      <button class="dropdown-item" type="submit" name="deleteCard" value="<%= newPosts._id %>" onChange="this.form.submit()"><i class="far fa-trash-alt"></i><span style="color: red;">Delete Memory</span></button>
-                    </form>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </form>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
       <% }) %>
     </div>
@@ -133,11 +129,11 @@
     <div class="model-content">
       <div class="navbar navbar-custom justify-content-between">
         <a class="navbar-brand" href="/memories">Memories</a>
-        <h3>Add a Memory</h3>
+        <h3 id="formHeading">Add a Memory</h3>
         <div class="close">+</div>
       </div>
       <div id="memory-container">
-        <form id="memoryForm" action="/memories/create" method="post" enctype="multipart/form-data">
+        <form id="addEditForm" action="/memories/create" method="post" enctype="multipart/form-data">
           <div class="row">
             <div id="col1" class="col1">
               <div class="drop-zone">
@@ -151,12 +147,15 @@
                   </p>
                   <p style="font-size: 14px; color: gray;">(Image should be upto 5MB each)</p>
                 </div>
+                <div  id="carouselExampleIndicators" class="carousel slide" data-ride="false">
+                  <div class="carousel-inner"></div>
+                </div>
               </div>
               <div class="multishot">
                 <label>Multi-shot</label>
                 <div class="portrait">
                   <ul id="frames">
-                    <% for(var i=0;i<6;i++) {%>
+                    <% for(var i=0;i<6;i++) { %>
                       <li>
                         <div class="drop-area-thumbnail preview"></div>
                       </li>
@@ -166,96 +165,17 @@
               </div>
             </div>
             <div class="col2">
-              <div class="form-group">
-                <label>Title</label>
-                <input type="text" class="form-control title1" name="title" placeholder="Title" autocomplete="off">
-              </div>
-              <div class="form-group">
-                <label>Tags</label>
-                <input type="text" class="form-control tag1" name="tags" placeholder="Tags (comma separated)">
-              </div>
-              <div class="form-group">
-                <label>Add a Description</label>
-                <textarea class="form-control message1" name="message" rows="3" placeholder="Write something about this memory"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Location</label>
-                <input type="text" class="form-control location1" name="location" placeholder="Location">
-              </div>
-              <div class="form-group">
-                <label>Add memory date</label>
-                <div class="row">
-                  <div class="col">
-                    <input type="number" class="form-control year1" name="year" placeholder="yyyy">
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control month1" name="month" placeholder="mm">
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control date1" name="date" placeholder="dd">
-                  </div>
-                </div>
-              </div>
-              <div class="form-group justify-content-between">
-                <label style="margin-bottom: 0;">Private memory
-                  <label class="switch">
-                    <input class="checkBox1" type="checkbox" name="checkbox" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </label>
-              </div>
-              <div style="margin-top: 1rem; display: flex; justify-content: space-between;">
-                <button class="secondary-btn clear" type="button" style="width: 180px;">Clear</button>
-                <button id="addMemoryButton" class="primary-btn" type="submit" name="button" style="width: 180px;">Add a memory</button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <div class="bg-model">
-    <div class="model-content">
-      <div class="navbar navbar-custom justify-content-between">
-        <a class="navbar-brand" href="/memories">Memories</a>
-        <h3>Edit a Memory</h3>
-        <div class="close">+</div>
-      </div>
-      <div id="memory-container">
-        <form action="/memories/update" method="post" enctype="multipart/form-data">
-          <div class="row">
-            <div class="col1">
-              <div class="drop-zone">
-                <div class="drop-zone__prompt">
-                  <i class="fas fa-cloud-upload-alt fa-7x"></i>
-                  <h2 style="font-size: 34px; font-weight: bold;">Drag and drop upto 6 image</h2>
-                  <p style="font-size: 22px; margin-bottom: 8px;">or
-                    <label for="drop-zone__input" class="custom-file">browse</label>
-                    <input type="file" id="drop-zone__input" class="drop-zone__input" name="photo[]" multiple />
-                    to choose a file
-                  </p>
-                  <p style="font-size: 14px; color: gray;">(Image should be upto 5MB each)</p>
-                </div>
-              </div>
-              <div class="multishot">
-                <label>Multi-shot</label>
-                <div class="portrait">
-                  <ul id="frames">
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="col2">
+              <input class="id" type="hidden">
               <div class="form-group">
                 <label>Title</label>
                 <input type="text" class="form-control title" name="title" placeholder="Title" autocomplete="off">
               </div>
               <div class="form-group">
                 <label>Tags</label>
-                <input type="text" class="form-control tag" name="tags" placeholder="Tags">
+                <input type="text" class="form-control tag" name="tags" placeholder="Tags (comma separated)">
               </div>
               <div class="form-group">
-                <label>Edit a Description</label>
+                <label>Add a Description</label>
                 <textarea class="form-control message" name="message" rows="3" placeholder="Write something about this memory"></textarea>
               </div>
               <div class="form-group">
@@ -263,7 +183,7 @@
                 <input type="text" class="form-control location" name="location" placeholder="Location">
               </div>
               <div class="form-group">
-                <label>Edit memory date</label>
+                <label>Add memory date</label>
                 <div class="row">
                   <div class="col">
                     <input type="number" class="form-control year" name="year" placeholder="yyyy">
@@ -279,14 +199,14 @@
               <div class="form-group justify-content-between">
                 <label style="margin-bottom: 0;">Private memory
                   <label class="switch">
-                    <input class="checkBox" type="checkbox" name="checkbox" />
-                    <span class="slider round"></span>
+                    <input class="checkBox" type="checkbox" name="checkbox">  
+                    <span class="slider round"></span> 
                   </label>
                 </label>
               </div>
               <div style="margin-top: 1rem; display: flex; justify-content: space-between;">
-                <button class="secondary-btn cancel" type="button" style="width: 180px;">Clear</button>
-                <button class="primary-btn id" type="submit" name="id" style="width: 180px;">Update a memory</button>
+                <button class="secondary-btn clear" type="button" style="width: 180px;">Clear</button>
+                <button id="addEditMemoryButton" class="primary-btn" type="submit" name="button" style="width: 180px;">Add a memory</button>
               </div>
             </div>
           </div>

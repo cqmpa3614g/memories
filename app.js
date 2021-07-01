@@ -1,4 +1,4 @@
-//jshint esversion:6
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -108,7 +108,7 @@ const memorySchema = {
   DateString: String,
   img: Array,
   fileLength: Number,
-  checkbox: String,
+  checkbox: Boolean,
   views: Number,
   likes: [{
     user: String
@@ -147,7 +147,7 @@ const auth = (req, res, next) => {
       url = req.params.postname.replace(/ /g, "-").split("-", 1);
       Memory.findById(url[0], async function(err, db) {
         if (err) {
-          res.redirect("/signin");
+          res.redirect("/memories");
         }
         else {
           data = await db;
@@ -161,7 +161,7 @@ const auth = (req, res, next) => {
         }
       });
     } else {
-      res.redirect("/signin");
+      res.redirect("/memories");
     }
   }
 }
@@ -241,6 +241,15 @@ app.get('/signin', function(req, res) {
 });
 app.get('/signup', function(req, res) {
   res.render("signup");
+});
+app.get('/logout', auth, async(req, res) => {
+  try {
+    res.clearCookie("jwt");
+    //await req.userData.save();
+    res.redirect('/memories');
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 app.post("/signup", function(req, res) {
   try {
@@ -408,7 +417,7 @@ app.post("/comment/delete", auth, async function(req, res) {
     }
   });
 });
-app.post("/memories/update", upload.array("photo[]", 6), auth, async function(req, res) {
+app.post("/memories/update", upload.array("photo[]", 6), auth, async function(req, res, next) {
   const tag = req.body.tags.replace(/,/g, " #");
   let date = req.body.date;
   let dateString;
@@ -470,21 +479,16 @@ app.post("/memories/update", upload.array("photo[]", 6), auth, async function(re
   }
 });
 app.post("/memories/delete", auth, async function(req, res) {
-  try {
-    await Memory.findByIdAndRemove(req.body.deleteCard, function(err, theUser) {
-      if (err) throw err;
-      else {
-        for (var i = 0; i < theUser.fileLength; i++) {
-          const filePath = "public/" + theUser.img[i];
-          fs.unlinkSync(filePath);
-        }
-        res.redirect("/memories/" + req.userData.username);
+  await Memory.findByIdAndRemove(req.body.deleteCard, function(err, theUser) {
+    if (err) throw err;
+    else {
+      for (var i = 0; i < theUser.fileLength; i++) {
+        const filePath = "public/" + theUser.img[i];
+        fs.unlinkSync(filePath);
       }
-    });
-  } catch (error) {
-    res.status(error.response.status)
-    return res.send(error.message);
-  }
+      res.redirect("/memories/" + req.userData.username);
+    }
+  });
 });
 app.post("/like", auth, function(req, res) {
   try {

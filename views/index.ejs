@@ -16,7 +16,7 @@
       <ul class="navbar-nav ml-auto">
         <% if(flag) { %>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fas fa-user-circle"></i></a>
+          <a class="primary-btn nav-link" href="/logout">Sign out</a>
         </li>
         <% } else { %>
         <li class="nav-item">
@@ -51,7 +51,7 @@
   <div class="inner-container2" style="padding-top: 0;">
     <div class="row">
       <% posts.forEach(function(newPosts) { %>
-      <% if(newPosts.checkbox!=="on") { %>
+      <% if(!newPosts.checkbox) { %>
       <div class="col-sm-4">
         <form action="/content" method="post">
           <div class="card">
@@ -112,16 +112,6 @@
           <% var url=newPosts.title.replace(/ /g,"-"); %>
           <li><a href="/memories/<%= newPosts._id %>-<%= url %>"><i class="fas fa-comment"> <span style="color: #9e9ea7;"><%= newPosts.userComment.length %></span></i></a></li>
         </ul>
-      </div>
-      <div class="dropdown">
-        <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="all: unSet;">
-          <i class="fas fa-ellipsis-h"></i>
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="border-radius: 12px;">
-          <form action="/share" method="post">
-            <button class="dropdown-item" type="button"><i class="fas fa-share" style="font-size: 16px; color: #00b359;"></i><span style="color: #00b359;">Share Memory</span></button>
-          </form>
-        </div>
       </div>
       </li>
       </ul>
