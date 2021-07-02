@@ -439,11 +439,20 @@ hr{
   display: flex;
   justify-content: center;
   align-items: center;
-  object-fit: scale-down;
+}
+.previewCarousel{
+  overflow: hidden;
+  display: flex;
+  object-fit: contain;
+}
+.previewCarousel img{
+  width: 600px;
+  height: 431px;
 }
 .drop-zone__prompt{
   text-align: center;
   padding: 100px 0;
+  display: block;
 }
 .drop-zone__prompt i{
   color: #d7d7da;

@@ -429,54 +429,53 @@ app.post("/memories/update", upload.array("photo[]", 6), auth, async function(re
     dateString = date + "rd " + months[req.body.month - 1] + ", " + req.body.year;
   else
     dateString = date + "th " + months[req.body.month - 1] + ", " + req.body.year;
-  if (req.files.length) {
-    let imgPath = [];
-    for (var i = 0; i < req.files.length; i++) {
-      let file = "uploads/" + req.files[i].filename;
-      imgPath.push(file);
+  let imgPath = [];
+  for (let i = 0; i < req.files.length; i++) {
+    let file = "uploads/" + req.files[i].filename;
+    imgPath.push(file);
+  }
+  let photo = req.body.oldImage.split(',');
+  if(photo != ''){
+    for(let oldImage of photo){
+      imgPath.push(oldImage);
     }
-    await Memory.findByIdAndUpdate(req.body.id, {
-      title: req.body.title,
-      tags: tag,
-      message: req.body.message,
-      location: req.body.location,
-      year: req.body.year,
-      month: req.body.month,
-      date: req.body.date,
-      DateString: dateString,
-      img: imgPath,
-      fileLength: req.files.length,
-      checkbox: req.body.checkbox,
-      views: 0
-    }, function(err) {
-      if (err) throw err;
+    Memory.findById(req.body.id, (err, db) => {
+      if(err) throw err;
       else {
-        for (var i = 0; i < imagePath.length; i++) {
-          const filePath = "public/" + imagePath[i];
-          fs.unlinkSync(filePath);
+        for(let newImage of db.img){
+          let flag=0;
+          for(let oldImage of photo){
+            if(oldImage === newImage) {
+              flag=1;
+            }
+          }
+          if(flag === 0){
+            const filePath = "public/" + newImage;
+            fs.unlinkSync(filePath);
+          }
         }
-        res.redirect("/memories/" + req.userData.username);
-      }
-    });
-  } else {
-    await Memory.findByIdAndUpdate(req.body.id, {
-      title: req.body.title,
-      tags: tag,
-      message: req.body.message,
-      location: req.body.location,
-      year: req.body.year,
-      month: req.body.month,
-      date: req.body.date,
-      DateString: dateString,
-      checkbox: req.body.checkbox,
-      views: 0
-    }, function(err) {
-      if (err) throw err;
-      else {
-        res.redirect("/memories/" + req.userData.username);
       }
     });
   }
+  await Memory.findByIdAndUpdate(req.body.id, {
+    title: req.body.title,
+    tags: tag,
+    message: req.body.message,
+    location: req.body.location,
+    year: req.body.year,
+    month: req.body.month,
+    date: req.body.date,
+    DateString: dateString,
+    img: imgPath,
+    fileLength: imgPath.length,
+    checkbox: req.body.checkbox,
+    views: 0
+  }, function(err) {
+    if (err) throw err;
+    else {
+      res.redirect("/memories/" + req.userData.username);
+    }
+  });
 });
 app.post("/memories/delete", auth, async function(req, res) {
   await Memory.findByIdAndRemove(req.body.deleteCard, function(err, theUser) {

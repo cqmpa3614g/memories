@@ -14,9 +14,19 @@ const previewArr = [];
 const thumbnail = () =>{
   for(let i=0;i<6;i++){
     $("#frames").append(`<li><div class="drop-area-thumbnail preview"></div></li>`);
+    $('.drop-zone__prompt').css('display', 'block');
+    $('#carouselExampleIndicators').css('display', 'none');
   }
 }
+if(previewArr.length === 0){
+  $('.drop-zone__prompt').css('display', 'block');
+  $('#carouselExampleIndicators').css('display', 'none');
+}
 const Append = () => {
+  if(previewArr.length !== 0){
+    $('.drop-zone__prompt').css('display', 'none');
+    $('#carouselExampleIndicators').css('display', 'flex');
+  }
   $("#frames").html('');
   if($('.carousel-inner').length>0){
     while (document.querySelector('.carousel-inner').firstChild) {
@@ -24,20 +34,20 @@ const Append = () => {
     }
   }
 
-  $('.carousel-inner').append(`<div class="carousel-item active"><img src="${window.URL.createObjectURL(previewArr[0])}" />
+  $('.carousel-inner').append(`<div class="carousel-item active"><img class="d-block w-100"src="${previewArr[0][1]}" />
   </div>`);
 
   for(let i=1;i<previewArr.length;i++){
-    $('.carousel-inner').append(`<div class="carousel-item"><img src="${window.URL.createObjectURL(previewArr[i])}" />
+    $('.carousel-inner').append(`<div class="carousel-item"><img class="d-block w-100" src="${previewArr[i][1]}" />
     </div>`);
   }
 
   $("#frames").append(`<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"><div style="position: relative">
-  <img src="${window.URL.createObjectURL(previewArr[0])}" class="drop-area-thumbnail" style="opacity: 1;" /><div class="previewClose">+</div></div></li>`);
+  <img src="${previewArr[0][1]}" class="drop-area-thumbnail" style="opacity: 1;" /><div class="previewClose">+</div></div></li>`);
 
   for(let i=1;i<previewArr.length;i++){
     $("#frames").append(`<li data-target="#carouselExampleIndicators" data-slide-to="${i}"><div style="position: relative">
-    <img src="${window.URL.createObjectURL(previewArr[i])}" class="drop-area-thumbnail" style="opacity: 1;" /><div class="previewClose">+</div></div></li>`);
+    <img src="${previewArr[i][1]}" class="drop-area-thumbnail" style="opacity: 1;" /><div class="previewClose">+</div></div></li>`);
   }
   const previewClose = document.querySelectorAll(".previewClose");
   for (let i = 0; i < previewArr.length; i++) {
@@ -49,8 +59,9 @@ const Append = () => {
             document.querySelector('.carousel-inner').lastChild.remove()
           }
           $("#frames").empty();
-          if(previewArr.length>0) 
+          if(previewArr.length>0) {
             Append();
+          }
           else {
             thumbnail();
           }
@@ -77,13 +88,13 @@ $(document).ready(function() {
     e.preventDefault();
     let image_list = e.originalEvent.dataTransfer.files;
     for (let i = 0; i < image_list.length && previewArr.length < 6; i++) {
-      previewArr.push(image_list[i]);
+      previewArr.push([image_list[i],window.URL.createObjectURL(image_list[i])]);
     }
     Append();
   });
   $('#drop-zone__input').change(function() {
     for (let i = 0; i < $(this)[0].files.length && previewArr.length < 6; i++)
-      previewArr.push(this.files[i]);
+      previewArr.push([this.files[i],window.URL.createObjectURL(this.files[i])]);
     Append();
   });
 });
@@ -162,9 +173,12 @@ for (let i = 0; i < edit.length; i++) {
         document.querySelector('.checkBox').checked=true;
       else 
         document.querySelector('.checkBox').checked=false;
-      // let photo = photos[j].value.split(',');
-      // for(let value of photo)
-      //   previewArr.push(value);
+      let photo = photos[j].value.split(',');
+      for(let value of photo){
+        let path='/'+value;
+        previewArr.push(['',path]);
+      }
+      Append();
     }
   })(i))
 }
@@ -191,9 +205,16 @@ $(document).ready(function() {
     fd.append("month", month);
     fd.append("date", date);
     fd.append("checkbox", checkBox);
+    let old_image=[];
     for (let i = 0; i < previewArr.length; i++) {
-      fd.append('photo[]', previewArr[i]);
+      if(previewArr[i][0] != '')
+        fd.append('photo[]', previewArr[i][0]);
+      else {
+        old_image.push(previewArr[i][1].slice(1));
+      }
     }
+    fd.append("oldImage", old_image);
+    if(previewArr.length === 0) return;
     $.ajax({
       type: 'POST',
       url: action,

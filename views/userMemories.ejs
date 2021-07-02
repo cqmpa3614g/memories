@@ -15,6 +15,9 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
+          <a class="nav-link tag-signin" href="/memories/<%=username %>"><%= username %></a>
+        </li>
+        <li class="nav-item">
           <a class="primary-btn nav-link" href="/logout">Sign out</a>
         </li>
       </ul>
@@ -148,7 +151,7 @@
                   <p style="font-size: 14px; color: gray;">(Image should be upto 5MB each)</p>
                 </div>
                 <div  id="carouselExampleIndicators" class="carousel slide" data-ride="false">
-                  <div class="carousel-inner"></div>
+                  <div class="carousel-inner previewCarousel"></div>
                 </div>
               </div>
               <div class="multishot">
