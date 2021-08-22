@@ -13,7 +13,7 @@ require('dotenv').config();
 const storage = multer.diskStorage({
   destination: './public/uploads/',
   filename: function(req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(null, Date.now() + `${Math.floor(Math.random()*1000)}` + path.extname(file.originalname));
   }
 });
 const upload = multer({
@@ -268,6 +268,7 @@ app.get('/logout', auth, async(req, res) => {
 app.post("/signup", function(req, res) {
   try {
     bcrypt.hash(req.body.password, 10, function(err, hash) {
+                                                                
       if (err) {
         return res.json({
           message: "Something wrong, Try again!",
